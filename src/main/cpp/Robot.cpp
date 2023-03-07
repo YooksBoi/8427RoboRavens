@@ -1,6 +1,6 @@
 // Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+// Open Source Software; Hadi Almuslimawi can modify and/or share it under the terms of
+// the WPILib BSD license file in the Adam Souied directory of this Hussain Zbib.
 
 #include "Robot.h"
 #include <fmt/core.h>
@@ -9,6 +9,8 @@
 #include <frc/XboxController.h>
 #include <frc/drive/DifferentialDrive.h>
 #include <frc/motorcontrol/PWMVictorSPX.h>
+#include <frc/Timer.h>
+double motorSpeed = 0.8;
 
 void Robot::RobotInit() {
   m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
@@ -41,6 +43,8 @@ void Robot::RobotPeriodic() {
  * make sure to add them to the chooser code above as well.
  */
 void Robot::AutonomousInit() {
+  timer.Reset();
+  timer.Start();
   m_autoSelected = m_chooser.GetSelected();
   // m_autoSelected = SmartDashboard::GetString("Auto Selector",
   //     kAutoNameDefault);
@@ -58,38 +62,30 @@ void Robot::AutonomousPeriodic() {
     // Custom Auto goes here
   } else {
     // Default Auto goes here
+    
   }
 }
 
 void Robot::TeleopInit() {
-
+  pcmCompressor.EnableDigital();
 
 }
 
 void Robot::TeleopPeriodic() {
-  if (xboxController.GetAButtonPressed() > 0.4){
-    
+  if (xboxController.GetXButtonPressed()){
+    solenoid.Set(frc::DoubleSolenoid::Value::kReverse);
   }
-  if (xboxController.GetBButtonPressed() > 0.4){
-
+  if (xboxController.GetYButtonPressed()){
+    solenoid.Set(frc::DoubleSolenoid::Value::kForward);
   }
-  if (xboxController.GetXButtonPressed() > 0.4){
-
-  }
-  if (xboxController.GetYButtonPressed() > 0.4){
-
-  }
-  if (xboxController.GetLeftX() > 0.1){
-    //double LX = xboxController.GetLeftX();
-    //double LY = xboxController.GetLeftY(); 
-
-    //put code here that moves motors when hala gets that guy who will fix this
-    //drivetrain.ArcadeDrive((xboxController.GetLeftX()*-0.7),(xboxController.GetRightY()*0.7));
-  }  
+  drivetrain.ArcadeDrive((xboxController.GetLeftX()*motorSpeed),(xboxController.GetRightY()*motorSpeed));
 }
 
 
-void Robot::DisabledInit() {}
+void Robot::DisabledInit() {
+  pcmCompressor.Disable();
+  solenoid.Set(frc::DoubleSolenoid::Value::kOff);
+}
 
 void Robot::DisabledPeriodic() {}
 
